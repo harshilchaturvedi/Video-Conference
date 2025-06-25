@@ -15,16 +15,17 @@ app.get('/',(req,res)=>{
 app.get('/:room',(req,res)=>{
     res.render('room',{roomId: req.params.room})
 })
-
+// here except(socket.id) used instead of broadcast as it was returning undefined
 io.on('connection', socket => {
   socket.on('join-room', (roomId) => {
+   
     if (!roomId) {
       console.error('No roomId provided');
       return;
     }
 
     socket.join(roomId);
-    socket.to(roomId).broadcast.emit('user-connected');
+    socket.to(roomId).except(socket.id).emit('user-connected');
   });
 });
 
